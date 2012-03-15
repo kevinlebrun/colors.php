@@ -26,10 +26,18 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
 
         $string = (string) color('foo')->white()->bold();
         $this->assertSame("\033[1m\033[37mfoo\033[0m\033[0m", $string);
+    }
 
-        // no decoration for unknown style
-        $string = (string) color('foo bar')->foo();
-        $this->assertSame('foo bar', $string);
+    public function testThrowsExceptionForInvalidStyle()
+    {
+        try {
+            color('foo bar')->foo();
+            $this->fail('Must throw an InvalidArgumentException');
+        } catch (InvalidArgumentException $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertInstanceOf('Colors\InvalidArgumentException', $e);
+            $this->assertEquals('Invalid style foo', $e->getMessage());
+        }
     }
 
     public function testHasShortcutDecorators()
@@ -74,6 +82,16 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
 
         if (!$passedThrough) {
             $this->fail('Not intercepted');
+        }
+    }
+
+    public function testThrowsAnExceptionForInvalidInterceptor()
+    {
+        try {
+            color('foo')->tap('not a callback');
+            $this->fail('Must throw an InvalidArgumentException');
+        } catch (InvalidArgumentException $e) {
+            $this->assertEquals('Invalid parameter; must be callable', $e->getMessage());
         }
     }
 

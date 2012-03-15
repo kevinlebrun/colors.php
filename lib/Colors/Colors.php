@@ -38,19 +38,17 @@ class Color
 
     public function __construct($string = '')
     {
-        $this->_initial = $this->_wrapped = (string) $string;
+        $this->_setInternalState($string);
     }
 
     public function __invoke($string)
     {
-        $this->_initial = $this->_wrapped = $string;
-        return $this;
+        return $this->_setInternalState($string);
     }
 
     public function __call($method, $args)
     {
-        $this->_decorate($method);
-        return $this;
+        return $this->_decorate($method);
     }
 
     public function __get($name)
@@ -58,12 +56,19 @@ class Color
         return $this->_decorate($name);
     }
 
+    protected function _setInternalState($string)
+    {
+        $this->_initial = $this->_wrapped = (string) $string;
+        return $this;
+    }
+
     protected function _decorate($style)
     {
-        if (array_key_exists($style, $this->_styles)) {
-            $format = $this->_styles[$style];
-            $this->_wrapped = sprintf($format, $this->_wrapped);
+        if (!array_key_exists($style, $this->_styles)) {
+            throw new InvalidArgumentException("Invalid style $style");
         }
+
+        $this->_wrapped = sprintf($this->_styles[$style], $this->_wrapped);
         return $this;
     }
 
@@ -84,6 +89,10 @@ class Color
 
     public function tap($callback)
     {
+        if (!is_callable($callback)) {
+            throw new InvalidArgumentException('Invalid parameter; must be callable');
+        }
+
         $callback($this->_wrapped);
         return $this;
     }
