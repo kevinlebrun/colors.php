@@ -1,0 +1,21 @@
+{
+    "name": "kevinlebrun/colors.php",
+    "description": "Colors for PHP CLI scripts",
+    "keywords": ["colors", "color", "console", "cli", "shell"],
+    "homepage": "https://github.com/kevinlebrun/colors.php",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Kevin Le Brun",
+            "email": "lebrun.k@gmail.com",
+            "homepage" : "https://github.com/kevinlebrun"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": { "Colors": "lib/" }
+    }
+}
