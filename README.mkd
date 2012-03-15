@@ -4,13 +4,13 @@
 
 ## Usage
 
-    ```php
-    <?php
-    require_once './lib/Colors/Colors.php';
+```php
+<?php
+require_once './lib/Colors/Colors.php';
 
-    $c = new \Colors\Color();
-    echo $c('Hello World!')->white()->bold()->highlight('green') . PHP_EOL;
-    ```
+$c = new \Colors\Color();
+echo $c('Hello World!')->white()->bold()->highlight('green') . PHP_EOL;
+```
 
 ## Test
 
