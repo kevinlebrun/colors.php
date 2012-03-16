@@ -5,6 +5,7 @@
 ## Usage
 
 Basic usage :
+
 ```php
 <?php
 require_once './lib/Colors/Color.php';
@@ -14,6 +15,7 @@ echo $c('Hello World!')->white()->bold()->highlight('green') . PHP_EOL;
 ```
 
 Custom theme :
+
 ```php
 <?php
 require_once './lib/Colors/Color.php';
