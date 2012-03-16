@@ -9,6 +9,7 @@ class Color
     protected $_wrapped = '';
     protected $_styles = array(
         // styles
+        // italic and blink may not work depending of your terminal
         'bold'      => "\033[1m%s\033[0m",
         'dark'      => "\033[2m%s\033[0m",
         'italic'    => "\033[3m%s\033[0m",
@@ -49,12 +50,17 @@ class Color
 
     public function __call($method, $args)
     {
-        return $this->_decorate($method);
+        return $this->_stylize($method);
     }
 
     public function __get($name)
     {
-        return $this->_decorate($name);
+        return $this->_stylize($name);
+    }
+
+    public function __toString()
+    {
+        return $this->_wrapped;
     }
 
     protected function _setInternalState($string)
@@ -63,25 +69,25 @@ class Color
         return $this;
     }
 
-    protected function _decorate($decorator)
+    protected function _stylize($style)
     {
-        if (array_key_exists($decorator, $this->_styles)) {
+        if (array_key_exists($style, $this->_styles)) {
 
-            $this->_wrapped = sprintf($this->_styles[$decorator], $this->_wrapped);
+            $this->_wrapped = sprintf($this->_styles[$style], $this->_wrapped);
 
-        } else if (array_key_exists($decorator, $this->_theme)) {
+        } else if (array_key_exists($style, $this->_theme)) {
 
-            $styles = $this->_theme[$decorator];
+            $styles = $this->_theme[$style];
             if (!is_array($styles)) {
                 $styles = array($styles);
             }
 
-            foreach ($styles as $style) {
-                $this->_decorate($style);
+            foreach ($styles as $styl) {
+                $this->_stylize($styl);
             }
 
         } else {
-            throw new InvalidArgumentException("Invalid style $decorator");
+            throw new InvalidArgumentException("Invalid style $style");
         }
 
         return $this;
@@ -89,27 +95,17 @@ class Color
 
     public function fg($color)
     {
-        return $this->_decorate($color);
+        return $this->_stylize($color);
     }
 
     public function bg($color)
     {
-        return $this->_decorate('bg_' . $color);
+        return $this->_stylize('bg_' . $color);
     }
 
     public function highlight($color)
     {
         return $this->bg($color);
-    }
-
-    public function tap($callback)
-    {
-        if (!is_callable($callback)) {
-            throw new InvalidArgumentException('Invalid parameter; must be callable');
-        }
-
-        $callback($this->_wrapped);
-        return $this;
     }
 
     public function reset()
@@ -118,20 +114,15 @@ class Color
         return $this;
     }
 
-    public function __toString()
+    public function clean()
     {
-        return $this->_wrapped;
+        $this->_wrapped = preg_replace("/\033\[\d+m/", '', $this->_wrapped);
+        return $this;
     }
 
     public function setTheme(array $theme)
     {
         $this->_theme = $theme;
-        return $this;
-    }
-
-    public function clean()
-    {
-        $this->_wrapped = preg_replace("/\033\[\d+m/", '', $this->_wrapped);
         return $this;
     }
 

@@ -67,34 +67,6 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $string);
     }
 
-    public function testHasDecorationInterceptor()
-    {
-        $passedThrough = false;
-
-        $self = $this;
-        $string = (string) color('foo')->bg_blue->tap(
-            function ($string) use ($self, &$passedThrough) {
-                $passedThrough = true;
-                $self->assertSame("\033[44mfoo\033[0m", $string);
-            }
-        )->reset()->green();
-        $this->assertSame("\033[32mfoo\033[0m", $string);
-
-        if (!$passedThrough) {
-            $this->fail('Not intercepted');
-        }
-    }
-
-    public function testThrowsAnExceptionForInvalidInterceptor()
-    {
-        try {
-            color('foo')->tap('not a callback');
-            $this->fail('Must throw an InvalidArgumentException');
-        } catch (InvalidArgumentException $e) {
-            $this->assertEquals('Invalid parameter; must be callable', $e->getMessage());
-        }
-    }
-
     public function testSupportsThemes()
     {
         $color = new Color();
