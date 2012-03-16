@@ -1,33 +1,57 @@
-# COLORS for PHP CLI scripts
+# COLORS [![Build Status](https://secure.travis-ci.org/kevinlebrun/colors.php.png)](http://travis-ci.org/kevinlebrun/colors.php?branch=master)
 
-[![Build Status](https://secure.travis-ci.org/kevinlebrun/colors.php.png)](http://travis-ci.org/kevinlebrun/colors.php?branch=master)
+Combine all those styles to make your console script awesome :
+
+* bold
+* dark
+* italic
+* underline
+* blink
+* reverse
+* concealed
+* black
+* red
+* green
+* yellow
+* blue
+* magenta
+* cyan
+* white
+* bg_black
+* bg_red
+* bg_green
+* bg_yellow
+* bg_blue
+* bg_magenta
+* bg_cyan
+* bg_white
+
 
 ## Usage
 
-Basic usage :
-
 ```php
 <?php
 require_once './lib/Colors/Color.php';
 
 $c = new \Colors\Color();
+
+// highlight('green') === bg('green') === bg_green()
+// white() === fg('white')
 echo $c('Hello World!')->white()->bold()->highlight('green') . PHP_EOL;
-```
 
-Custom theme :
+// using some magic
+echo $c('Hello World!')->white->bold->bg_green . PHP_EOL;
 
-```php
-<?php
-require_once './lib/Colors/Color.php';
-
-$c = new \Colors\Color();
+// create your own theme
 $c->setTheme(
     array(
         'welcome' => array('white', 'bg_green'),
+        'bye' => 'blue',
     )
 );
 
 echo $c('Hello World!')->welcome->bold . PHP_EOL;
+echo $c('Bye!')->bye . PHP_EOL;
 ```
 
 ## Test

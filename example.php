@@ -1,26 +1,23 @@
 #!/usr/bin/env php
 <?php
-
 require_once './lib/Colors/Color.php';
 
-use Colors\Color;
+$c = new \Colors\Color();
 
-function c($string = '')
-{
-    return new Colors\Color($string);
-}
+// highlight('green') === bg('green') === bg_green()
+// white() === fg('white')
+echo $c('Hello World!')->white()->bold()->highlight('green') . PHP_EOL;
 
-$color = new Color();
-echo $color('Some bold red text')->red->bold . PHP_EOL;
-echo c('Some reversed blue text')->blue->reverse . PHP_EOL;
-echo c('Some underlined text')->underline . PHP_EOL;
+// using some magic
+echo $c('Hello World!')->white->bold->bg_green . PHP_EOL;
 
-$color->setTheme(
+// create your own theme
+$c->setTheme(
     array(
-        'error' => 'red',
-        'warning' => array('bg_yellow', 'white'),
+        'welcome' => array('white', 'bg_green'),
+        'bye' => 'blue',
     )
 );
 
-echo $color('Error...')->error . PHP_EOL;
-echo $color('Warning...')->warning->bold . PHP_EOL;
+echo $c('Hello World!')->welcome->bold . PHP_EOL;
+echo $c('Bye!')->bye . PHP_EOL;
