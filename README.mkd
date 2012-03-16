@@ -4,12 +4,28 @@
 
 ## Usage
 
+Basic usage :
 ```php
 <?php
-require_once './lib/Colors/Colors.php';
+require_once './lib/Colors/Color.php';
 
 $c = new \Colors\Color();
 echo $c('Hello World!')->white()->bold()->highlight('green') . PHP_EOL;
+```
+
+Custom theme :
+```php
+<?php
+require_once './lib/Colors/Color.php';
+
+$c = new \Colors\Color();
+$c->setTheme(
+    array(
+        'welcome' => array('white', 'bg_green'),
+    )
+);
+
+echo $c('Hello World!')->welcome->bold . PHP_EOL;
 ```
 
 ## Test

@@ -95,4 +95,29 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testSupportsThemes()
+    {
+        $color = new Color();
+        $color->setTheme(
+            array(
+                'error' => 'red',
+                'warning' => array('bg_yellow', 'white'),
+                'white' => 'red',
+            )
+        );
+
+        $actual = (string) $color('Error...')->error;
+        $expected = (string) color('Error...')->red;
+        $this->assertEquals($expected, $actual);
+
+        $actual = (string) $color('Warning...')->warning->bold;
+        $expected = (string) color('Warning...')->bg_yellow->white->bold;
+        $this->assertEquals($expected, $actual);
+
+        // no overriding existing styles
+        $actual = (string) $color('foobar')->white;
+        $expected = (string) color('foobar')->white;
+        $this->assertEquals($expected, $actual);
+    }
+
 }

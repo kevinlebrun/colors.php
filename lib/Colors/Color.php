@@ -35,6 +35,7 @@ class Color
         'bg_cyan'    => "\033[46m%s\033[0m",
         'bg_white'   => "\033[47m%s\033[0m",
     );
+    protected $_theme = array();
 
     public function __construct($string = '')
     {
@@ -62,13 +63,27 @@ class Color
         return $this;
     }
 
-    protected function _decorate($style)
+    protected function _decorate($decorator)
     {
-        if (!array_key_exists($style, $this->_styles)) {
-            throw new InvalidArgumentException("Invalid style $style");
+        if (array_key_exists($decorator, $this->_styles)) {
+
+            $this->_wrapped = sprintf($this->_styles[$decorator], $this->_wrapped);
+
+        } else if (array_key_exists($decorator, $this->_theme)) {
+
+            $styles = $this->_theme[$decorator];
+            if (!is_array($styles)) {
+                $styles = array($styles);
+            }
+
+            foreach ($styles as $style) {
+                $this->_decorate($style);
+            }
+
+        } else {
+            throw new InvalidArgumentException("Invalid style $decorator");
         }
 
-        $this->_wrapped = sprintf($this->_styles[$style], $this->_wrapped);
         return $this;
     }
 
@@ -106,6 +121,12 @@ class Color
     public function __toString()
     {
         return $this->_wrapped;
+    }
+
+    public function setTheme(array $theme)
+    {
+        $this->_theme = $theme;
+        return $this;
     }
 
 }
