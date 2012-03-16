@@ -120,4 +120,11 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    public function testCleansStyles()
+    {
+        $string = (string) color('foo')->red()->highlight('green');
+        $actual = (string) color($string)->clean();
+        $this->assertEquals('foo', $actual);
+    }
+
 }

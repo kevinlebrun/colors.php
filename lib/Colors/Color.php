@@ -129,4 +129,10 @@ class Color
         return $this;
     }
 
+    public function clean()
+    {
+        $this->_wrapped = preg_replace("/\033\[\d+m/", '', $this->_wrapped);
+        return $this;
+    }
+
 }
