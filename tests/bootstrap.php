@@ -7,4 +7,4 @@ set_include_path(implode(PATH_SEPARATOR, array(
 
 require_once 'Colors/Exception.php';
 require_once 'Colors/InvalidArgumentException.php';
-require_once 'Colors/Colors.php';
+require_once 'Colors/Color.php';
