@@ -56,7 +56,7 @@ echo $c('Bye!')->bye . PHP_EOL;
 
 ## Test
 
-    $ phpunit -c tests --coverage-text
+    $ phpunit -c tests
 
 ## License
 
