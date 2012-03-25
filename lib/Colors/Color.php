@@ -75,6 +75,8 @@ class Color
             return $this;
         }
 
+        $style = strtolower($style);
+
         if (array_key_exists($style, $this->_styles)) {
 
             $this->_wrapped = sprintf($this->_styles[$style], $this->_wrapped);

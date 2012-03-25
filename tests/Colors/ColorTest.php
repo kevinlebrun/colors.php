@@ -24,7 +24,7 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $string = (string) color('foo')->red();
         $this->assertSame("\033[31mfoo\033[0m", $string);
 
-        $string = (string) color('foo')->white()->bold();
+        $string = (string) color('foo')->WHITE()->bold();
         $this->assertSame("\033[1m\033[37mfoo\033[0m\033[0m", $string);
     }
 
