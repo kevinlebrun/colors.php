@@ -54,12 +54,15 @@ class Color
 
     public function __call($method, $args)
     {
-        return $this->stylize($method);
+        if (count($args) >= 1) {
+            return $this->apply($method, $args[0]);
+        }
+        return $this->apply($method);
     }
 
     public function __get($name)
     {
-        return $this->stylize($name);
+        return $this->apply($name);
     }
 
     public function __toString()
@@ -73,17 +76,17 @@ class Color
         return $this;
     }
 
-    public function stylize($style)
+    protected function _stylize($style, $text)
     {
         if (!$this->isSupported()) {
-            return $this;
+            return $text;
         }
 
         $style = strtolower($style);
 
         if (array_key_exists($style, $this->_styles)) {
 
-            $this->_wrapped = sprintf($this->_styles[$style], $this->_wrapped);
+            $text = sprintf($this->_styles[$style], $text);
 
         } else if (array_key_exists($style, $this->_theme)) {
 
@@ -93,29 +96,40 @@ class Color
             }
 
             foreach ($styles as $styl) {
-                $this->stylize($styl);
+                $text = $this->_stylize($styl, $text);
             }
 
         } else {
             throw new InvalidArgumentException("Invalid style $style");
         }
 
-        return $this;
+        return $text;
     }
 
-    public function fg($color)
+    public function apply($style, $text = null)
     {
-        return $this->stylize($color);
+        if ($text === null) {
+            $this->_wrapped = $this->_stylize($style, $this->_wrapped);
+            return $this;
+        }
+
+        $text = $this->_stylize($style, $text);
+        return $text;
     }
 
-    public function bg($color)
+    public function fg($color, $text = null)
     {
-        return $this->stylize('bg_' . $color);
+        return $this->apply($color, $text);
     }
 
-    public function highlight($color)
+    public function bg($color, $text = null)
     {
-        return $this->bg($color);
+        return $this->apply('bg_' . $color, $text);
+    }
+
+    public function highlight($color, $text = null)
+    {
+        return $this->bg($color, $text);
     }
 
     public function reset()
@@ -124,15 +138,23 @@ class Color
         return $this;
     }
 
-    public function clean()
+    protected function _stripColors($text)
     {
-        $this->_wrapped = preg_replace("/\033\[\d+m/", '', $this->_wrapped);
-        return $this;
+        return preg_replace("/\033\[\d+m/", '', $text);
     }
 
-    public function strip()
+    public function clean($text = null)
     {
-        return $this->clean();
+        if ($text === null) {
+            $this->_wrapped = $this->_stripColors($this->_wrapped);
+            return $this;
+        }
+        return $this->_stripColors($text);
+    }
+
+    public function strip($text = null)
+    {
+        return $this->clean($text);
     }
 
     public function isAValidStyleName($name)
@@ -165,20 +187,26 @@ class Color
         // @codeCoverageIgnoreEnd
     }
 
+    protected function _colorizeText($text)
+    {
+        return preg_replace_callback(self::FORMAT_PATTERN, array($this, '_replaceStyle'), $text);
+    }
+
     /**
      * https://github.com/symfony/Console/blob/master/Formatter/OutputFormatter.php#L124-162
      */
-    public function colorize()
+    public function colorize($text = null)
     {
-        $this->_wrapped = preg_replace_callback(self::FORMAT_PATTERN, array($this, '_replaceStyle'), $this->_wrapped);
-        return $this;
+        if ($text === null) {
+            $this->_wrapped = $this->_colorizeText($this->_wrapped);
+            return $this;
+        }
+        return $this->_colorizeText($text);
     }
 
     protected function _replaceStyle($matches)
     {
-        $color = new self();
-        $color->setTheme($this->_theme);
-        return $color($matches[2])->colorize()->stylize($matches[1]);
+        return $this->apply($matches[1], $this->colorize($matches[2]));
     }
 
 }

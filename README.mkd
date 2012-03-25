@@ -55,12 +55,18 @@ $c->setTheme(
 echo $c('Hello World!')->welcome->bold . PHP_EOL;
 echo $c('Bye!')->bye . PHP_EOL;
 
+// use style tags
 $text = <<<EOF
 1 : <welcome>Hello <bold>World!</bold></welcome>
 2 : <bye>Bye!</bye>
 EOF;
 
 echo $c($text)->colorize() . PHP_EOL;
+
+// use standard API
+$message = $c->apply('bold', $c->white('Hello World!'));
+echo $message . PHP_EOL;
+echo $c->clean($message) . PHP_EOL;
 ```
 
 ## Test

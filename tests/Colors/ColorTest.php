@@ -122,6 +122,9 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $string = (string) color('foo')->red()->highlight('green');
         $actual = (string) color($string)->strip();
         $this->assertEquals('foo', $actual);
+
+        $string = (string) color()->strip(color('some text')->red());
+        $this->assertEquals('some text', $string);
     }
 
     public function testOnlyDecoratesWhenSupported()
@@ -165,6 +168,17 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $text = '<cyan>Hello <bold>World!</bold></cyan>';
         $actual = (string) color($text)->colorize();
         $expected = (string) color('Hello ' . color('World!')->bold)->cyan;
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppliesStyleDirectlyToText()
+    {
+        $actual = color()->apply('blue', 'foo');
+        $expected = (string) color('foo')->blue;
+        $this->assertSame($expected, $actual);
+
+        $actual = color()->white('some white text');
+        $expected = (string) color('some white text')->white();
         $this->assertSame($expected, $actual);
     }
 
