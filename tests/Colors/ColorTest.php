@@ -99,6 +99,16 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $actual);
     }
 
+    /**
+     * @see testCleansStyles()
+     */
+    public function testStripsStyles()
+    {
+        $string = (string) color('foo')->red()->highlight('green');
+        $actual = (string) color($string)->strip();
+        $this->assertEquals('foo', $actual);
+    }
+
     public function testOnlyDecoratesWhenSupported()
     {
         $color = $this->getMockBuilder('Colors\Color')

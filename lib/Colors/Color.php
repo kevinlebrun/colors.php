@@ -124,6 +124,11 @@ class Color
         return $this;
     }
 
+    public function strip()
+    {
+        return $this->clean();
+    }
+
     public function setTheme(array $theme)
     {
         $this->_theme = $theme;
