@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+require_once './lib/Colors/Exception.php';
+require_once './lib/Colors/InvalidArgumentException.php';
 require_once './lib/Colors/Color.php';
 
 $c = new \Colors\Color();
@@ -21,3 +23,10 @@ $c->setTheme(
 
 echo $c('Hello World!')->welcome->bold . PHP_EOL;
 echo $c('Bye!')->bye . PHP_EOL;
+
+$text = <<<EOF
+1 : <welcome>Hello <bold>World!</bold></welcome>
+2 : <bye>Bye!</bye>
+EOF;
+
+echo $c($text)->colorize() . PHP_EOL;

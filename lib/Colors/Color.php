@@ -5,6 +5,7 @@ namespace Colors;
 class Color
 {
 
+    const FORMAT_PATTERN = '#<([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)>(.*?)</\\1?>#s';
     // http://www.php.net/manual/en/functions.user-defined.php
     const STYLE_NAME_PATTERN = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
 
@@ -53,12 +54,12 @@ class Color
 
     public function __call($method, $args)
     {
-        return $this->_stylize($method);
+        return $this->stylize($method);
     }
 
     public function __get($name)
     {
-        return $this->_stylize($name);
+        return $this->stylize($name);
     }
 
     public function __toString()
@@ -72,7 +73,7 @@ class Color
         return $this;
     }
 
-    protected function _stylize($style)
+    public function stylize($style)
     {
         if (!$this->isSupported()) {
             return $this;
@@ -92,7 +93,7 @@ class Color
             }
 
             foreach ($styles as $styl) {
-                $this->_stylize($styl);
+                $this->stylize($styl);
             }
 
         } else {
@@ -104,12 +105,12 @@ class Color
 
     public function fg($color)
     {
-        return $this->_stylize($color);
+        return $this->stylize($color);
     }
 
     public function bg($color)
     {
-        return $this->_stylize('bg_' . $color);
+        return $this->stylize('bg_' . $color);
     }
 
     public function highlight($color)
@@ -164,6 +165,20 @@ class Color
         // @codeCoverageIgnoreEnd
     }
 
-    // TODO https://github.com/symfony/Console/blob/master/Formatter/OutputFormatter.php
+    /**
+     * https://github.com/symfony/Console/blob/master/Formatter/OutputFormatter.php#L124-162
+     */
+    public function colorize()
+    {
+        $this->_wrapped = preg_replace_callback(self::FORMAT_PATTERN, array($this, '_replaceStyle'), $this->_wrapped);
+        return $this;
+    }
+
+    protected function _replaceStyle($matches)
+    {
+        $color = new self();
+        $color->setTheme($this->_theme);
+        return $color($matches[2])->colorize()->stylize($matches[1]);
+    }
 
 }

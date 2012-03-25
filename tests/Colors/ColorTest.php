@@ -146,4 +146,26 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo bar', $actual);
     }
 
+    public function testInterpretsStyleTags()
+    {
+        $color = new Color();
+
+        $text = 'before <red>some text</red>';
+        $actual = (string) $color($text)->colorize();
+        $expected = 'before ' . color('some text')->red;
+        $this->assertSame($expected, $actual);
+
+        $color->setTheme(array('foo' => array('cyan', 'bold')));
+        $actual = $color('<foo>some text</foo>')->colorize();
+        $expected = (string) color('some text')->cyan->bold;
+    }
+
+    public function testInterpretsNestedStyleTags()
+    {
+        $text = '<cyan>Hello <bold>World!</bold></cyan>';
+        $actual = (string) color($text)->colorize();
+        $expected = (string) color('Hello ' . color('World!')->bold)->cyan;
+        $this->assertSame($expected, $actual);
+    }
+
 }
