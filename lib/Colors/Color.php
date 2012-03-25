@@ -5,6 +5,9 @@ namespace Colors;
 class Color
 {
 
+    // http://www.php.net/manual/en/functions.user-defined.php
+    const STYLE_NAME_PATTERN = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
+
     protected $_initial = '';
     protected $_wrapped = '';
     protected $_styles = array(
@@ -131,8 +134,18 @@ class Color
         return $this->clean();
     }
 
+    public function isAValidStyleName($name)
+    {
+        return preg_match(self::STYLE_NAME_PATTERN, $name);
+    }
+
     public function setTheme(array $theme)
     {
+        foreach ($theme as $name => $styles) {
+            if (!$this->isAValidStyleName($name)) {
+                throw new InvalidArgumentException("$name is not a valid style name");
+            }
+        }
         $this->_theme = $theme;
         return $this;
     }

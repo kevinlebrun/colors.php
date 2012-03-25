@@ -92,6 +92,21 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    public function testThrowsExceptionForInvalidThemeName()
+    {
+        $color = new Color();
+        try {
+            $color->setTheme(
+                array(
+                    'foo-bar' => 'red',
+                )
+            );
+            $this->fail('must throw an InvalidArgumentException');
+        } catch (InvalidArgumentException $e) {
+            $this->assertSame('foo-bar is not a valid style name', $e->getMessage());
+        }
+    }
+
     public function testCleansStyles()
     {
         $string = (string) color('foo')->red()->highlight('green');
