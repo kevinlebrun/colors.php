@@ -71,6 +71,10 @@ class Color
 
     protected function _stylize($style)
     {
+        if (!$this->isSupported()) {
+            return $this;
+        }
+
         if (array_key_exists($style, $this->_styles)) {
 
             $this->_wrapped = sprintf($this->_styles[$style], $this->_wrapped);
@@ -125,5 +129,21 @@ class Color
         $this->_theme = $theme;
         return $this;
     }
+
+    /**
+     * https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L93-112
+     */
+    public function isSupported()
+    {
+        // @codeCoverageIgnoreStart
+        if (DIRECTORY_SEPARATOR == '\\') {
+            return false !== getenv('ANSICON');
+        }
+
+        return function_exists('posix_isatty') && @posix_isatty(STDOUT);
+        // @codeCoverageIgnoreEnd
+    }
+
+    // TODO https://github.com/symfony/Console/blob/master/Formatter/OutputFormatter.php
 
 }

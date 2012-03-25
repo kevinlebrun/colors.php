@@ -99,4 +99,26 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $actual);
     }
 
+    public function testOnlyDecoratesWhenSupported()
+    {
+        $color = $this->getMockBuilder('Colors\Color')
+            ->setMethods(array('isSupported'))
+            ->getMock();
+
+        $color->expects($this->at(0))
+            ->method('isSupported')
+            ->will($this->returnValue(true));
+
+        $color->expects($this->at(1))
+            ->method('isSupported')
+            ->will($this->returnValue(false));
+
+        $actual = (string) $color('foo bar')->red;
+        $expected = (string) color('foo bar')->red;
+        $this->assertSame($expected, $actual);
+
+        $actual = (string) $color('foo bar')->red;
+        $this->assertSame('foo bar', $actual);
+    }
+
 }
