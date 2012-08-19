@@ -182,4 +182,14 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $actual);
     }
 
+    public function testCenter() {
+        $width = 80;
+        $color = new Color();
+        foreach (array('', 'hello', 'hello world!', '✩') as $text) {
+            $this->assertSame($width, mb_strlen($color($text)
+                ->center($width)->__toString(), 'UTF-8'));
+            $this->assertSame($width, mb_strlen($color($text)
+                ->center($width)->bg('blue')->clean()->__toString(), 'UTF-8'));
+        }
+    }
 }
