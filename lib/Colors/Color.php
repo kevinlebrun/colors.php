@@ -138,6 +138,23 @@ class Color
         return $this;
     }
 
+    public function center($width = 80, $text = null)
+    {
+        if ($text === null) {
+            $text = $this->_wrapped;
+        }
+
+        $centered = '';
+        foreach (explode(PHP_EOL, $text) as $line) {
+            $line = trim($line);
+            $width = strlen($line) - mb_strlen($line, 'UTF-8') + $width;
+            $centered .= str_pad($line, $width, ' ', STR_PAD_BOTH) . PHP_EOL;
+        }
+
+        $this->_setInternalState(trim($centered, PHP_EOL));
+        return $this;
+    }
+
     protected function _stripColors($text)
     {
         return preg_replace("/\033\[\d+m/", '', $text);
