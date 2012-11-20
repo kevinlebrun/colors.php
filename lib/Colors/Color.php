@@ -147,8 +147,8 @@ class Color
         $centered = '';
         foreach (explode(PHP_EOL, $text) as $line) {
             $line = trim($line);
-            $width = strlen($line) - mb_strlen($line, 'UTF-8') + $width;
-            $centered .= str_pad($line, $width, ' ', STR_PAD_BOTH) . PHP_EOL;
+            $lineWidth = strlen($line) - mb_strlen($line, 'UTF-8') + $width;
+            $centered .= str_pad($line, $lineWidth, ' ', STR_PAD_BOTH) . PHP_EOL;
         }
 
         $this->_setInternalState(trim($centered, PHP_EOL));
