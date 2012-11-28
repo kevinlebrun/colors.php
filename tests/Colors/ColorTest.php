@@ -192,4 +192,15 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
                 ->center($width)->bg('blue')->clean()->__toString(), 'UTF-8'));
         }
     }
+
+    public function testCenterMultiline() {
+        $width = 80;
+        $color = new Color();
+        $text = 'hello' . PHP_EOL . '✩' . PHP_EOL . 'world';
+
+        $actual = $color($text)->center($width)->__toString();
+        foreach(explode(PHP_EOL, $actual) as $line) {
+            $this->assertSame($width, mb_strlen($line, 'UTF-8'));
+        }
+    }
 }
