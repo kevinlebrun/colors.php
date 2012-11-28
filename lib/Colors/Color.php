@@ -11,6 +11,7 @@ class Color
 
     protected $_initial = '';
     protected $_wrapped = '';
+    protected $_forcetty = null;
     protected $_styles = array(
         // styles
         // italic and blink may not work depending of your terminal
@@ -42,9 +43,12 @@ class Color
     );
     protected $_theme = array();
 
-    public function __construct($string = '')
+    public function __construct($string = '', $forcetty = null)
     {
         $this->_setInternalState($string);
+        if (!is_null($forcetty)) {
+            $this->setForcetty($forcetty);
+        }
     }
 
     public function __invoke($string)
@@ -190,12 +194,21 @@ class Color
         return $this;
     }
 
+    public function setForcetty($forcetty)
+    {
+        $this->_forcetty = (bool) $forcetty;
+        return $this;
+    }
+
     /**
      * https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L93-112
      */
     public function isSupported()
     {
         // @codeCoverageIgnoreStart
+        if (!is_null($this->_forcetty)) {
+            return $this->_forcetty;
+        }   
         if (DIRECTORY_SEPARATOR == '\\') {
             return false !== getenv('ANSICON');
         }

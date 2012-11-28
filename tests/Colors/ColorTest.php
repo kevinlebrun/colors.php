@@ -192,4 +192,21 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
                 ->center($width)->bg('blue')->clean()->__toString(), 'UTF-8'));
         }
     }
+
+    public function testForcetty() {
+        $color = new Color();
+        $this->assertSame(true, $color->isSupported());
+
+        $color = new Color('', false);
+        $this->assertSame(false, $color->isSupported());
+
+        $color = new Color('', true);
+        $this->assertSame(true, $color->isSupported());
+
+        $color->setForcetty(true);
+        $this->assertSame(true, $color->isSupported());
+
+        $color->setForcetty(false);
+        $this->assertSame(false, $color->isSupported());
+    }
 }
