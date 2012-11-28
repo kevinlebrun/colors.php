@@ -2,4 +2,6 @@ language: php
 php:
   - 5.3
   - 5.4
-script: phpunit -c tests
+before_script:
+  - composer install --dev
+script: bin/phpunit

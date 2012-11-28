@@ -10,14 +10,15 @@
          syntaxCheck="false"
          strict="true"
          verbose="true"
-         bootstrap="bootstrap.php">
+         bootstrap="tests/bootstrap.php">
+
     <testsuite name="Colors Test Suite">
-        <directory>./Colors</directory>
+        <directory>tests/Colors</directory>
     </testsuite>
 
     <filter>
         <whitelist>
-            <directory>../lib/Colors</directory>
+            <directory>lib/Colors</directory>
         </whitelist>
     </filter>
 

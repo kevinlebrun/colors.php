@@ -1,6 +1,9 @@
 <?php
 
-namespace Colors;
+namespace Colors\Test;
+
+use Colors\Color;
+use Colors\InvalidArgumentException;
 
 function color($string = '')
 {

@@ -1,10 +1,11 @@
 #!/usr/bin/env php
 <?php
-require_once './lib/Colors/Exception.php';
-require_once './lib/Colors/InvalidArgumentException.php';
-require_once './lib/Colors/Color.php';
 
-$c = new \Colors\Color();
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Colors\Color;
+
+$c = new Color();
 
 // highlight('green') === bg('green') === bg_green()
 // white() === fg('white')
@@ -31,6 +32,10 @@ $text = <<<EOF
 EOF;
 
 echo $c($text)->colorize() . PHP_EOL;
+
+// center text
+$text = 'hello' . PHP_EOL . '✩' . PHP_EOL . 'world';
+echo $c($text)->center() . PHP_EOL;
 
 // use standard API
 $message = $c->apply('bold', $c->white('Hello World!'));
