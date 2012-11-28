@@ -9,9 +9,9 @@ class Color
     // http://www.php.net/manual/en/functions.user-defined.php
     const STYLE_NAME_PATTERN = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
 
-    protected $_initial = '';
-    protected $_wrapped = '';
-    protected $_styles = array(
+    protected $initial = '';
+    protected $wrapped = '';
+    protected $styles = array(
         // styles
         // italic and blink may not work depending of your terminal
         'bold'      => "\033[1m%s\033[0m",
@@ -40,16 +40,16 @@ class Color
         'bg_cyan'    => "\033[46m%s\033[0m",
         'bg_white'   => "\033[47m%s\033[0m",
     );
-    protected $_theme = array();
+    protected $theme = array();
 
     public function __construct($string = '')
     {
-        $this->_setInternalState($string);
+        $this->setInternalState($string);
     }
 
     public function __invoke($string)
     {
-        return $this->_setInternalState($string);
+        return $this->setInternalState($string);
     }
 
     public function __call($method, $args)
@@ -67,16 +67,16 @@ class Color
 
     public function __toString()
     {
-        return $this->_wrapped;
+        return $this->wrapped;
     }
 
-    protected function _setInternalState($string)
+    protected function setInternalState($string)
     {
-        $this->_initial = $this->_wrapped = (string) $string;
+        $this->initial = $this->wrapped = (string) $string;
         return $this;
     }
 
-    protected function _stylize($style, $text)
+    protected function stylize($style, $text)
     {
         if (!$this->isSupported()) {
             return $text;
@@ -84,19 +84,19 @@ class Color
 
         $style = strtolower($style);
 
-        if (array_key_exists($style, $this->_styles)) {
+        if (array_key_exists($style, $this->styles)) {
 
-            $text = sprintf($this->_styles[$style], $text);
+            $text = sprintf($this->styles[$style], $text);
 
-        } else if (array_key_exists($style, $this->_theme)) {
+        } elseif (array_key_exists($style, $this->theme)) {
 
-            $styles = $this->_theme[$style];
+            $styles = $this->theme[$style];
             if (!is_array($styles)) {
                 $styles = array($styles);
             }
 
             foreach ($styles as $styl) {
-                $text = $this->_stylize($styl, $text);
+                $text = $this->stylize($styl, $text);
             }
 
         } else {
@@ -109,12 +109,11 @@ class Color
     public function apply($style, $text = null)
     {
         if ($text === null) {
-            $this->_wrapped = $this->_stylize($style, $this->_wrapped);
+            $this->wrapped = $this->stylize($style, $this->wrapped);
             return $this;
         }
 
-        $text = $this->_stylize($style, $text);
-        return $text;
+        return $this->stylize($style, $text);
     }
 
     public function fg($color, $text = null)
@@ -134,14 +133,14 @@ class Color
 
     public function reset()
     {
-        $this->_wrapped = $this->_initial;
+        $this->wrapped = $this->initial;
         return $this;
     }
 
     public function center($width = 80, $text = null)
     {
         if ($text === null) {
-            $text = $this->_wrapped;
+            $text = $this->wrapped;
         }
 
         $centered = '';
@@ -151,11 +150,11 @@ class Color
             $centered .= str_pad($line, $lineWidth, ' ', STR_PAD_BOTH) . PHP_EOL;
         }
 
-        $this->_setInternalState(trim($centered, PHP_EOL));
+        $this->setInternalState(trim($centered, PHP_EOL));
         return $this;
     }
 
-    protected function _stripColors($text)
+    protected function stripColors($text)
     {
         return preg_replace("/\033\[\d+m/", '', $text);
     }
@@ -163,10 +162,11 @@ class Color
     public function clean($text = null)
     {
         if ($text === null) {
-            $this->_wrapped = $this->_stripColors($this->_wrapped);
+            $this->wrapped = $this->stripColors($this->wrapped);
             return $this;
         }
-        return $this->_stripColors($text);
+
+        return $this->stripColors($text);
     }
 
     public function strip($text = null)
@@ -186,7 +186,7 @@ class Color
                 throw new InvalidArgumentException("$name is not a valid style name");
             }
         }
-        $this->_theme = $theme;
+        $this->theme = $theme;
         return $this;
     }
 
@@ -204,9 +204,9 @@ class Color
         // @codeCoverageIgnoreEnd
     }
 
-    protected function _colorizeText($text)
+    protected function colorizeText($text)
     {
-        return preg_replace_callback(self::FORMAT_PATTERN, array($this, '_replaceStyle'), $text);
+        return preg_replace_callback(self::FORMAT_PATTERN, array($this, 'replaceStyle'), $text);
     }
 
     /**
@@ -215,15 +215,14 @@ class Color
     public function colorize($text = null)
     {
         if ($text === null) {
-            $this->_wrapped = $this->_colorizeText($this->_wrapped);
+            $this->wrapped = $this->colorizeText($this->wrapped);
             return $this;
         }
-        return $this->_colorizeText($text);
+        return $this->colorizeText($text);
     }
 
-    protected function _replaceStyle($matches)
+    protected function replaceStyle($matches)
     {
         return $this->apply($matches[1], $this->colorize($matches[2]));
     }
-
 }

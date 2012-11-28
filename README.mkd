@@ -92,6 +92,7 @@ echo $c->clean($message) . PHP_EOL;
     $ curl -s https://getcomposer.org/installer | php
     $ php composer.phar install --dev
     $ bin/phpunit
+    $ bin/phpcs --standard=phpcs.xml -p .
 
 ## Contributors
 
