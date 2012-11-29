@@ -41,6 +41,7 @@ class Color
         'bg_white'   => "\033[47m%s\033[0m",
     );
     protected $theme = array();
+    protected $isStyleForced = false;
 
     public function __construct($string = '')
     {
@@ -57,6 +58,7 @@ class Color
         if (count($args) >= 1) {
             return $this->apply($method, $args[0]);
         }
+
         return $this->apply($method);
     }
 
@@ -70,6 +72,30 @@ class Color
         return $this->wrapped;
     }
 
+    public function setForceStyle($force)
+    {
+        $this->isStyleForced = (bool) $force;
+    }
+
+    public function isStyleForced()
+    {
+        return $this->isStyleForced;
+    }
+
+    /**
+     * https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L93-112
+     */
+    public function isSupported()
+    {
+        // @codeCoverageIgnoreStart
+        if (DIRECTORY_SEPARATOR == '\\') {
+            return false !== getenv('ANSICON');
+        }
+
+        return function_exists('posix_isatty') && @posix_isatty(STDOUT);
+        // @codeCoverageIgnoreEnd
+    }
+
     protected function setInternalState($string)
     {
         $this->initial = $this->wrapped = (string) $string;
@@ -78,7 +104,7 @@ class Color
 
     protected function stylize($style, $text)
     {
-        if (!$this->isSupported()) {
+        if (!$this->shouldStylize()) {
             return $text;
         }
 
@@ -104,6 +130,11 @@ class Color
         }
 
         return $text;
+    }
+
+    protected function shouldStylize()
+    {
+        return $this->isStyleForced() || $this->isSupported();
     }
 
     public function apply($style, $text = null)
@@ -186,22 +217,9 @@ class Color
                 throw new InvalidArgumentException("$name is not a valid style name");
             }
         }
+
         $this->theme = $theme;
         return $this;
-    }
-
-    /**
-     * https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L93-112
-     */
-    public function isSupported()
-    {
-        // @codeCoverageIgnoreStart
-        if (DIRECTORY_SEPARATOR == '\\') {
-            return false !== getenv('ANSICON');
-        }
-
-        return function_exists('posix_isatty') && @posix_isatty(STDOUT);
-        // @codeCoverageIgnoreEnd
     }
 
     protected function colorizeText($text)
@@ -218,6 +236,7 @@ class Color
             $this->wrapped = $this->colorizeText($this->wrapped);
             return $this;
         }
+
         return $this->colorizeText($text);
     }
 

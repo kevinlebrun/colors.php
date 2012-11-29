@@ -208,4 +208,34 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($width, mb_strlen($line, 'UTF-8'));
         }
     }
+
+    public function testStylesAreNotAppliedWhenNotSupported()
+    {
+        $color = $this->getmock('colors\color', array('isSupported'));
+        $color
+            ->expects($this->any())
+            ->method('issupported')
+            ->will($this->returnvalue(false));
+        $this->assertfalse($color->issupported());
+
+        $actual = $color->apply('blue', 'foo');
+        $this->assertsame('foo', $actual);
+    }
+
+    public function testStylesAreAppliedWhenForced()
+    {
+        $color = $this->getmock('colors\color', array('isSupported'));
+        $color
+            ->expects($this->any())
+            ->method('issupported')
+            ->will($this->returnvalue(false));
+        $this->assertfalse($color->issupported());
+
+        $color->setForceStyle(true);
+        $this->assertTrue($color->isStyleForced());
+
+        $actual = $color->apply('blue', 'foo');
+        $expected = (string) color()->apply('blue', 'foo');
+        $this->assertsame($expected, $actual);
+    }
 }
