@@ -98,6 +98,7 @@ echo $c->clean($message) . PHP_EOL;
 
 * Nate Good <me@nategood.com>
 * Jérémy Derusse <https://github.com/jeremy-derusse>
+* Cam Spiers <camspiers@gmail.com>
 
 ## License
 

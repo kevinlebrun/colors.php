@@ -211,10 +211,10 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
 
     public function testStylesAreNotAppliedWhenNotSupported()
     {
-        $color = $this->getmock('colors\color', array('isSupported'));
+        $color = $this->getMock('colors\color', array('isSupported'));
         $color
             ->expects($this->any())
-            ->method('issupported')
+            ->method('isSupported')
             ->will($this->returnvalue(false));
         $this->assertfalse($color->issupported());
 
@@ -224,10 +224,10 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
 
     public function testStylesAreAppliedWhenForced()
     {
-        $color = $this->getmock('colors\color', array('isSupported'));
+        $color = $this->getMock('colors\color', array('isSupported'));
         $color
             ->expects($this->any())
-            ->method('issupported')
+            ->method('isSupported')
             ->will($this->returnvalue(false));
         $this->assertfalse($color->issupported());
 
