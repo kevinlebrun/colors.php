@@ -14,31 +14,49 @@ class Color
     protected $styles = array(
         // styles
         // italic and blink may not work depending of your terminal
-        'bold'      => "\033[1m%s\033[0m",
-        'dark'      => "\033[2m%s\033[0m",
-        'italic'    => "\033[3m%s\033[0m",
-        'underline' => "\033[4m%s\033[0m",
-        'blink'     => "\033[5m%s\033[0m",
-        'reverse'   => "\033[7m%s\033[0m",
-        'concealed' => "\033[8m%s\033[0m",
+        'bold'              => "\033[1m%s\033[0m",
+        'dark'              => "\033[2m%s\033[0m",
+        'italic'            => "\033[3m%s\033[0m",
+        'underline'         => "\033[4m%s\033[0m",
+        'blink'             => "\033[5m%s\033[0m",
+        'reverse'           => "\033[7m%s\033[0m",
+        'concealed'         => "\033[8m%s\033[0m",
         // foreground colors
-        'black'     => "\033[30m%s\033[0m",
-        'red'       => "\033[31m%s\033[0m",
-        'green'     => "\033[32m%s\033[0m",
-        'yellow'    => "\033[33m%s\033[0m",
-        'blue'      => "\033[34m%s\033[0m",
-        'magenta'   => "\033[35m%s\033[0m",
-        'cyan'      => "\033[36m%s\033[0m",
-        'white'     => "\033[37m%s\033[0m",
+        'default'           => "\033[39m%s\033[0m",
+        'black'             => "\033[30m%s\033[0m",
+        'red'               => "\033[31m%s\033[0m",
+        'green'             => "\033[32m%s\033[0m",
+        'yellow'            => "\033[33m%s\033[0m",
+        'blue'              => "\033[34m%s\033[0m",
+        'magenta'           => "\033[35m%s\033[0m",
+        'cyan'              => "\033[36m%s\033[0m",
+        'light_gray'        => "\033[37m%s\033[0m",
+        'dark_gray'         => "\033[90m%s\033[0m",
+        'light_red'         => "\033[91m%s\033[0m",
+        'light_green'       => "\033[92m%s\033[0m",
+        'light_yellow'      => "\033[93m%s\033[0m",
+        'light_blue'        => "\033[94m%s\033[0m",
+        'light_magenta'     => "\033[95m%s\033[0m",
+        'light_cyan'        => "\033[96m%s\033[0m",
+        'white'             => "\033[97m%s\033[0m",
         // background colors
-        'bg_black'   => "\033[40m%s\033[0m",
-        'bg_red'     => "\033[41m%s\033[0m",
-        'bg_green'   => "\033[42m%s\033[0m",
-        'bg_yellow'  => "\033[43m%s\033[0m",
-        'bg_blue'    => "\033[44m%s\033[0m",
-        'bg_magenta' => "\033[45m%s\033[0m",
-        'bg_cyan'    => "\033[46m%s\033[0m",
-        'bg_white'   => "\033[47m%s\033[0m",
+        'bg_default'        => "\033[49m%s\033[0m",
+        'bg_black'          => "\033[40m%s\033[0m",
+        'bg_red'            => "\033[41m%s\033[0m",
+        'bg_green'          => "\033[42m%s\033[0m",
+        'bg_yellow'         => "\033[43m%s\033[0m",
+        'bg_blue'           => "\033[44m%s\033[0m",
+        'bg_magenta'        => "\033[45m%s\033[0m",
+        'bg_cyan'           => "\033[46m%s\033[0m",
+        'bg_light_gray'     => "\033[47m%s\033[0m",
+        'bg_dark_gray'      => "\033[100m%s\033[0m",
+        'bg_light_red'      => "\033[101m%s\033[0m",
+        'bg_light_green'    => "\033[102m%s\033[0m",
+        'bg_light_yellow'   => "\033[103m%s\033[0m",
+        'bg_light_blue'     => "\033[104m%s\033[0m",
+        'bg_light_magenta'  => "\033[105m%s\033[0m",
+        'bg_light_cyan'     => "\033[106m%s\033[0m",
+        'bg_white'          => "\033[107m%s\033[0m",
     );
     protected $theme = array();
     protected $isStyleForced = false;
@@ -110,7 +128,24 @@ class Color
 
         $style = strtolower($style);
 
-        if (array_key_exists($style, $this->styles)) {
+        if (preg_match('/^((?:bg_)?)rgb\[([0-9]+)(%?),([0-9]+)(%?),([0-9]+)(%?)]$/', $style, $matches)) {
+
+            $r = round(5 * ($matches[2] / ($matches[3] == '%' ? 100 : 255)));
+            $g = round(5 * ($matches[4] / ($matches[5] == '%' ? 100 : 255)));
+            $b = round(5 * ($matches[6] / ($matches[7] == '%' ? 100 : 255)));
+
+            $color = ($r * 36 + $g * 6 + $b) + 16;
+            $option = $matches[1] == 'bg_' ? 48 : 38;
+            $text = sprintf("\033[{$option};5;{$color}m%s\033[0m", $text);
+
+        } elseif (preg_match('/^((?:bg_)?)gray\[([0-9]+)(%?)]$/', $style, $matches)) {
+
+            $gray = round(23 * ($matches[2] / ($matches[3] == '%' ? 100 : 255))) + 232;
+
+            $option = $matches[1] == 'bg_' ? 48 : 38;
+            $text = sprintf("\033[{$option};5;{$gray}m%s\033[0m", $text);
+
+        } elseif (array_key_exists($style, $this->styles)) {
 
             $text = sprintf($this->styles[$style], $text);
 
