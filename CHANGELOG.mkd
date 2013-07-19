@@ -1,0 +1,12 @@
+## 0.4.0 (unreleased)
+
+FEATURES:
+
+ - Added brighter colors. #4
+
+IMPROVEMENTS:
+
+ - User styles can override default ones.
+ - `setTheme` is deprecated in favor of `setUserStyles`.
+
+## 0.3.0 (November 29, 2012)

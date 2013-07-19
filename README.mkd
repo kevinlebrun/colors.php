@@ -1,7 +1,11 @@
-# COLORS [![Build Status](https://secure.travis-ci.org/kevinlebrun/colors.php.png)](http://travis-ci.org/kevinlebrun/colors.php?branch=master)
+# COLORS
+
+[![Build Status](https://secure.travis-ci.org/kevinlebrun/colors.php.png)](http://travis-ci.org/kevinlebrun/colors.php?branch=master)
+[![Coverage Status](https://coveralls.io/repos/kevinlebrun/colors.php/badge.png)](https://coveralls.io/r/kevinlebrun/colors.php)
 
 Combine all those styles to make your console script awesome:
 
+* reset
 * bold
 * dark
 * italic
@@ -9,6 +13,8 @@ Combine all those styles to make your console script awesome:
 * blink
 * reverse
 * concealed
+* default
+* white
 * black
 * red
 * green
@@ -16,7 +22,16 @@ Combine all those styles to make your console script awesome:
 * blue
 * magenta
 * cyan
-* white
+* light_gray
+* dark_gray
+* light_red
+* light_green
+* light_yellow
+* light_blue
+* light_magenta
+* light_cyan
+* bg_default
+* bg_white
 * bg_black
 * bg_red
 * bg_green
@@ -24,10 +39,16 @@ Combine all those styles to make your console script awesome:
 * bg_blue
 * bg_magenta
 * bg_cyan
-* bg_white
+* bg_light_gray
+* bg_dark_gray
+* bg_light_red
+* bg_light_green
+* bg_light_yellow
+* bg_light_blue
+* bg_light_magenta
+* bg_light_cyan
 
-
-## Usage
+## Installation
 
 Installation via composer is highly recommended.
 
@@ -41,6 +62,8 @@ Installation via composer is highly recommended.
 
     $ curl -s https://getcomposer.org/installer | php
     $ php composer.phar install
+
+## Usage
 
 ```php
 <?php
@@ -87,11 +110,19 @@ echo $message . PHP_EOL;
 echo $c->clean($message) . PHP_EOL;
 ```
 
-## Test
+## Contributing
+
+Install development dependencies:
 
     $ curl -s https://getcomposer.org/installer | php
     $ php composer.phar install --dev
+
+All tests must pass:
+
     $ bin/phpunit
+
+Code style conventions must be followed:
+
     $ bin/phpcs --standard=phpcs.xml -p .
 
 ## Contributors
@@ -99,12 +130,14 @@ echo $c->clean($message) . PHP_EOL;
 * Nate Good <me@nategood.com>
 * Jérémy Derusse <https://github.com/jeremy-derusse>
 * Cam Spiers <camspiers@gmail.com>
+* Menthol <https://github.com/menthol>
+* Shane Garelja <https://github.com/shane-garelja>
 
 ## License
 
 (The MIT License)
 
-Copyright (c) 2012 Kevin Le Brun <lebrun.k@gmail.com>
+Copyright (c) 2013 Kevin Le Brun <lebrun.k@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

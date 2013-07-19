@@ -4,43 +4,65 @@ namespace Colors;
 
 class Color
 {
-
     const FORMAT_PATTERN = '#<([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)>(.*?)</\\1?>#s';
     // http://www.php.net/manual/en/functions.user-defined.php
     const STYLE_NAME_PATTERN = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
 
+    const ESC = "\033[";
+    const ESC_SEQ_PATTERN = "\033[%sm";
+
     protected $initial = '';
     protected $wrapped = '';
+    // italic and blink may not work depending of your terminal
     protected $styles = array(
-        // styles
-        // italic and blink may not work depending of your terminal
-        'bold'      => "\033[1m%s\033[0m",
-        'dark'      => "\033[2m%s\033[0m",
-        'italic'    => "\033[3m%s\033[0m",
-        'underline' => "\033[4m%s\033[0m",
-        'blink'     => "\033[5m%s\033[0m",
-        'reverse'   => "\033[7m%s\033[0m",
-        'concealed' => "\033[8m%s\033[0m",
-        // foreground colors
-        'black'     => "\033[30m%s\033[0m",
-        'red'       => "\033[31m%s\033[0m",
-        'green'     => "\033[32m%s\033[0m",
-        'yellow'    => "\033[33m%s\033[0m",
-        'blue'      => "\033[34m%s\033[0m",
-        'magenta'   => "\033[35m%s\033[0m",
-        'cyan'      => "\033[36m%s\033[0m",
-        'white'     => "\033[37m%s\033[0m",
-        // background colors
-        'bg_black'   => "\033[40m%s\033[0m",
-        'bg_red'     => "\033[41m%s\033[0m",
-        'bg_green'   => "\033[42m%s\033[0m",
-        'bg_yellow'  => "\033[43m%s\033[0m",
-        'bg_blue'    => "\033[44m%s\033[0m",
-        'bg_magenta' => "\033[45m%s\033[0m",
-        'bg_cyan'    => "\033[46m%s\033[0m",
-        'bg_white'   => "\033[47m%s\033[0m",
+        'reset'            => '0',
+        'bold'             => '1',
+        'dark'             => '2',
+        'italic'           => '3',
+        'underline'        => '4',
+        'blink'            => '5',
+        'reverse'          => '7',
+        'concealed'        => '8',
+
+        'default'          => '39',
+        'black'            => '30',
+        'red'              => '31',
+        'green'            => '32',
+        'yellow'           => '33',
+        'blue'             => '34',
+        'magenta'          => '35',
+        'cyan'             => '36',
+        'light_gray'       => '37',
+
+        'dark_gray'        => '90',
+        'light_red'        => '91',
+        'light_green'      => '92',
+        'light_yellow'     => '93',
+        'light_blue'       => '94',
+        'light_magenta'    => '95',
+        'light_cyan'       => '96',
+        'white'            => '97',
+
+        'bg_default'       => '49',
+        'bg_black'         => '40',
+        'bg_red'           => '41',
+        'bg_green'         => '42',
+        'bg_yellow'        => '43',
+        'bg_blue'          => '44',
+        'bg_magenta'       => '45',
+        'bg_cyan'          => '46',
+        'bg_light_gray'    => '47',
+
+        'bg_dark_gray'     => '100',
+        'bg_light_red'     => '101',
+        'bg_light_green'   => '102',
+        'bg_light_yellow'  => '103',
+        'bg_light_blue'    => '104',
+        'bg_light_magenta' => '105',
+        'bg_light_cyan'    => '106',
+        'bg_white'         => '107',
     );
-    protected $theme = array();
+    protected $userStyles = array();
     protected $isStyleForced = false;
 
     public function __construct($string = '')
@@ -110,31 +132,51 @@ class Color
 
         $style = strtolower($style);
 
-        if (array_key_exists($style, $this->styles)) {
-
-            $text = sprintf($this->styles[$style], $text);
-
-        } elseif (array_key_exists($style, $this->theme)) {
-
-            $styles = $this->theme[$style];
-            if (!is_array($styles)) {
-                $styles = array($styles);
-            }
-
-            foreach ($styles as $styl) {
-                $text = $this->stylize($styl, $text);
-            }
-
-        } else {
-            throw new InvalidArgumentException("Invalid style $style");
+        if ($this->isUserStyleExists($style)) {
+            return $this->applyUserStyle($style, $text);
         }
 
-        return $text;
+        if ($this->isStyleExists($style)) {
+            return $this->applyStyle($style, $text);
+        }
+
+        throw new InvalidArgumentException("Invalid style $style");
     }
 
     protected function shouldStylize()
     {
         return $this->isStyleForced() || $this->isSupported();
+    }
+
+    protected function isStyleExists($style)
+    {
+        return array_key_exists($style, $this->styles);
+    }
+
+    protected function applyStyle($style, $text)
+    {
+        return $this->buildEscSeq($style) . $text . $this->buildEscSeq('reset');
+    }
+
+    protected function buildEscSeq($style)
+    {
+        return sprintf(self::ESC_SEQ_PATTERN, $this->styles[$style]);
+    }
+
+    protected function isUserStyleExists($style)
+    {
+        return array_key_exists($style, $this->userStyles);
+    }
+
+    protected function applyUserStyle($userStyle, $text)
+    {
+        $styles = (array) $this->userStyles[$userStyle];
+
+        foreach ($styles as $style) {
+            $text = $this->stylize($style, $text);
+        }
+
+        return $text;
     }
 
     public function apply($style, $text = null)
@@ -187,7 +229,7 @@ class Color
 
     protected function stripColors($text)
     {
-        return preg_replace("/\033\[\d+m/", '', $text);
+        return preg_replace('/' . preg_quote(self::ESC) . '\d+m/', '', $text);
     }
 
     public function clean($text = null)
@@ -210,15 +252,23 @@ class Color
         return preg_match(self::STYLE_NAME_PATTERN, $name);
     }
 
+    /**
+     * @deprecated
+     */
     public function setTheme(array $theme)
     {
-        foreach ($theme as $name => $styles) {
+        return $this->setUserStyles($theme);
+    }
+
+    public function setUserStyles(array $userStyles)
+    {
+        foreach ($userStyles as $name => $styles) {
             if (!$this->isAValidStyleName($name)) {
                 throw new InvalidArgumentException("$name is not a valid style name");
             }
         }
 
-        $this->theme = $theme;
+        $this->userStyles = $userStyles;
         return $this;
     }
 

@@ -28,7 +28,7 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $this->assertSame("\033[31mfoo\033[0m", $string);
 
         $string = (string) color('foo')->WHITE()->bold();
-        $this->assertSame("\033[1m\033[37mfoo\033[0m\033[0m", $string);
+        $this->assertSame("\033[1m\033[97mfoo\033[0m\033[0m", $string);
     }
 
     public function testThrowsExceptionForInvalidStyle()
@@ -73,25 +73,26 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
     public function testSupportsThemes()
     {
         $color = new Color();
+        $color->setTheme(array('error' => 'red'));
+
+        $actual = (string) $color('Error...')->error->bold;
+        $expected = (string) color('Error...')->red->bold;
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testThemesCanOverrideDefaultStyles()
+    {
+        $color = new Color();
         $color->setTheme(
             array(
-                'error' => 'red',
                 'warning' => array('bg_yellow', 'white'),
                 'white' => 'red',
             )
         );
 
-        $actual = (string) $color('Error...')->error;
-        $expected = (string) color('Error...')->red;
-        $this->assertEquals($expected, $actual);
-
-        $actual = (string) $color('Warning...')->warning->bold;
-        $expected = (string) color('Warning...')->bg_yellow->white->bold;
-        $this->assertEquals($expected, $actual);
-
-        // no overriding existing styles
-        $actual = (string) $color('foobar')->white;
-        $expected = (string) color('foobar')->white;
+        // can override existing styles
+        $actual = (string) $color('Warning...')->warning;
+        $expected = (string) color('Warning...')->bg_yellow->red;
         $this->assertEquals($expected, $actual);
     }
 
