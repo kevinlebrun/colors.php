@@ -18,7 +18,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
-        "squizlabs/php_codesniffer": "1.*"
+        "squizlabs/php_codesniffer": "1.*",
+        "satooshi/php-coveralls": "dev-master"
     },
     "config": {
         "bin-dir": "bin"
