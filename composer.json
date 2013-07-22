@@ -25,6 +25,6 @@
         "bin-dir": "bin"
     },
     "autoload": {
-        "psr-0": { "Colors": "lib/" }
+        "psr-0": { "Colors": "src/" }
     }
 }

@@ -8,5 +8,7 @@ IMPROVEMENTS:
 
  - User styles can override default ones.
  - `setTheme` is deprecated in favor of `setUserStyles`.
+ - Added some badges to the README page.
+ - Renamed `lib` directory to `src`.
 
 ## 0.3.0 (November 29, 2012)
