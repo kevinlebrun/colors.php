@@ -14,8 +14,8 @@ echo $c('Hello World!')->white()->bold()->highlight('green') . PHP_EOL;
 // using some magic
 echo $c('Hello World!')->white->bold->bg_green . PHP_EOL;
 
-// create your own theme
-$c->setTheme(
+// create your own styles
+$c->setUserStyles(
     array(
         'welcome' => array('white', 'bg_green'),
         'bye' => 'blue',
