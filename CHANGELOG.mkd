@@ -6,6 +6,7 @@ FEATURES:
 
 IMPROVEMENTS:
 
+ - Renamed `InvalidArgumentException` to either `NoStyleFoundException` or `InvalidStyleNameException`.
  - User styles can override default ones.
  - `setTheme` is deprecated in favor of `setUserStyles`.
  - Added some badges to the README page.

@@ -140,7 +140,7 @@ class Color
             return $this->applyStyle($style, $text);
         }
 
-        throw new InvalidArgumentException("Invalid style $style");
+        throw new NoStyleFoundException("Invalid style $style");
     }
 
     protected function shouldStylize()
@@ -264,7 +264,7 @@ class Color
     {
         foreach ($userStyles as $name => $styles) {
             if (!$this->isAValidStyleName($name)) {
-                throw new InvalidArgumentException("$name is not a valid style name");
+                throw new InvalidStyleNameException("$name is not a valid style name");
             }
         }
 

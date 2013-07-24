@@ -3,7 +3,8 @@
 namespace Colors\Test;
 
 use Colors\Color;
-use Colors\InvalidArgumentException;
+use Colors\NoStyleFoundException;
+use Colors\InvalidStyleNameException;
 
 function color($string = '')
 {
@@ -12,193 +13,156 @@ function color($string = '')
 
 class ColorsTest extends \PHPUnit_Framework_TestCase
 {
-
-    public function testConvertsAsString()
+    public function testGivenStringShouldApplyStyle()
     {
-        $color = color('foo');
-        $this->assertSame('foo', (string) $color);
-
-        $color('bar');
-        $this->assertSame('bar', (string) $color);
+        assertSame("\033[31mfoo\033[0m", (string) color('foo')->red());
     }
 
-    public function testDecoratesString()
+    public function testGivenStringShouldApplyMoreThanOneStyle()
     {
-        $string = (string) color('foo')->red();
-        $this->assertSame("\033[31mfoo\033[0m", $string);
-
-        $string = (string) color('foo')->WHITE()->bold();
-        $this->assertSame("\033[1m\033[97mfoo\033[0m\033[0m", $string);
+        assertSame("\033[1m\033[97mfoo\033[0m\033[0m", (string) color('foo')->white()->bold());
     }
 
-    public function testThrowsExceptionForInvalidStyle()
+    public function testStyleNameIsNotCaseSensitive()
+    {
+        assertSame("\033[31mfoo\033[0m", (string) color('foo')->RED());
+    }
+
+    public function testStateIsInitializedForSuccessiveCalls()
+    {
+        $color = new Color();
+        assertSame('foo', (string) $color('foo'));
+        assertSame('bar', (string) $color('bar'));
+    }
+
+    public function testGivenStyledStringShouldBeAbleToResetIt()
+    {
+        assertSame('foo', (string) color('foo')->blue()->reset());
+    }
+
+    public function testThrowsExceptionForUnknownStyle()
     {
         try {
             color('foo bar')->foo();
-            $this->fail('Must throw an InvalidArgumentException');
-        } catch (InvalidArgumentException $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertInstanceOf('Colors\InvalidArgumentException', $e);
-            $this->assertEquals('Invalid style foo', $e->getMessage());
+            $this->fail('Must throw an exception');
+        } catch (NoStyleFoundException $e) {
+            assertInstanceOf('InvalidArgumentException', $e);
+            assertEquals('Invalid style foo', $e->getMessage());
         }
     }
 
-    public function testHasShortcutDecorators()
+    public function testCanDirectlyCallStyleMethodOnText()
     {
-        $string = 'Hello World!';
-
-        $actual = (string) color($string)->fg('blue');
-        $expected = (string) color($string)->blue();
-        $this->assertSame($expected, $actual);
-
-        $actual = (string) color($string)->bg('blue');
-        $expected = (string) color($string)->bg_blue();
-        $this->assertSame($expected, $actual);
-
-        $actual = (string) color($string)->highlight('blue');
-        $expected = (string) color($string)->bg('blue');
-        $this->assertSame($expected, $actual);
-
-        $actual = (string) color($string)->blue;
-        $expected = (string) color($string)->blue();
-        $this->assertSame($expected, $actual);
+        assertsame((string) color('foo')->blue(), color()->blue('foo'));
     }
 
-    public function testResetsDecoration()
+    public function testHasShortcutForForegroundColor()
     {
-        $string = (string) color('foo')->blue()->reset();
-        $this->assertSame('foo', $string);
+        assertSame((string) color('Hello')->blue(), (string) color('Hello')->fg('blue'));
     }
 
-    public function testSupportsThemes()
+    public function testHasShortcutForBackgroundColor()
+    {
+        assertSame((string) color('Hello')->bg_red(), (string) color('Hello')->bg('red'));
+    }
+
+    public function testHasHighlightShortcutForBackgroundColor()
+    {
+        assertSame((string) color('Hello')->bg_blue(), (string) color('Hello')->highlight('blue'));
+    }
+
+    public function testHasPropertyShortcutForStyle()
+    {
+        assertSame((string) color('Hello')->blue(), (string) color('Hello')->blue);
+    }
+
+    public function testShouldSupportUserStyles()
+    {
+        $color = new Color();
+        $color->setUserStyles(array('error' => 'red'));
+
+        assertEquals((string) color('Error...')->red(), (string) $color('Error...')->error());
+    }
+
+    public function testUserStylesShouldOverrideDefaultStyles()
+    {
+        $color = new Color();
+        $color->setUserStyles(array('white' => 'red'));
+
+        assertEquals((string) color('Warning...')->red, (string) $color('Warning...')->white);
+    }
+
+    public function testHasThemeShortcutForUserStyles()
     {
         $color = new Color();
         $color->setTheme(array('error' => 'red'));
 
-        $actual = (string) $color('Error...')->error->bold;
-        $expected = (string) color('Error...')->red->bold;
-        $this->assertEquals($expected, $actual);
+        assertInternalType('string', (string) $color('Hello')->red);
     }
 
-    public function testThemesCanOverrideDefaultStyles()
-    {
-        $color = new Color();
-        $color->setTheme(
-            array(
-                'warning' => array('bg_yellow', 'white'),
-                'white' => 'red',
-            )
-        );
-
-        // can override existing styles
-        $actual = (string) $color('Warning...')->warning;
-        $expected = (string) color('Warning...')->bg_yellow->red;
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testThrowsExceptionForInvalidThemeName()
+    public function testGivenInvalidUserStyleNameShouldThrowAnException()
     {
         $color = new Color();
         try {
-            $color->setTheme(
-                array(
-                    'foo-bar' => 'red',
-                )
-            );
+            $color->setTheme(array('foo-bar' => 'red'));
             $this->fail('must throw an InvalidArgumentException');
-        } catch (InvalidArgumentException $e) {
-            $this->assertSame('foo-bar is not a valid style name', $e->getMessage());
+        } catch (InvalidStyleNameException $e) {
+            assertInstanceOf('InvalidArgumentException', $e);
+            assertSame('foo-bar is not a valid style name', $e->getMessage());
         }
     }
 
-    public function testCleansStyles()
+    public function testGivenStyledStringWhenCleanedShouldStripAllStyles()
     {
-        $string = (string) color('foo')->red()->highlight('green');
-        $actual = (string) color($string)->clean();
-        $this->assertEquals('foo', $actual);
+        assertEquals('some text', (string) color((string) color('some text')->red())->clean());
     }
 
-    /**
-     * @see testCleansStyles()
-     */
-    public function testStripsStyles()
+    public function testHasStripShortcutForClean()
     {
-        $string = (string) color('foo')->red()->highlight('green');
-        $actual = (string) color($string)->strip();
-        $this->assertEquals('foo', $actual);
-
-        $string = (string) color()->strip(color('some text')->red());
-        $this->assertEquals('some text', $string);
+        assertEquals('some text', (string) color()->strip(color('some text')->red()));
     }
 
-    public function testOnlyDecoratesWhenSupported()
+    public function testGivenThatStylesAreNotSupportedShouldReturnInputString()
     {
-        $color = $this->getMockBuilder('Colors\Color')
-            ->setMethods(array('isSupported'))
-            ->getMock();
-
-        $color->expects($this->at(0))
-            ->method('isSupported')
-            ->will($this->returnValue(true));
-
-        $color->expects($this->at(1))
+        $color = $this->getMock('colors\color', array('isSupported'));
+        $color->expects($this->once())
             ->method('isSupported')
             ->will($this->returnValue(false));
 
-        $actual = (string) $color('foo bar')->red;
-        $expected = (string) color('foo bar')->red;
-        $this->assertSame($expected, $actual);
-
-        $actual = (string) $color('foo bar')->red;
-        $this->assertSame('foo bar', $actual);
+        assertSame('foo bar', (string) $color('foo bar')->red());
     }
 
-    public function testInterpretsStyleTags()
+    public function testGivenStringWithStyleTagsShouldInterpretThem()
     {
-        $color = new Color();
-
         $text = 'before <red>some text</red>';
-        $actual = (string) $color($text)->colorize();
-        $expected = 'before ' . color('some text')->red;
-        $this->assertSame($expected, $actual);
-
-        $color->setTheme(array('foo' => array('cyan', 'bold')));
-        $actual = $color('<foo>some text</foo>')->colorize();
-        $expected = (string) color('some text')->cyan->bold;
+        assertSame('before ' . color('some text')->red(), (string) color($text)->colorize());
     }
 
-    public function testInterpretsNestedStyleTags()
+    public function testGivenStringWithNestedStyleTagsShouldInterpretThem()
     {
-        $text = '<cyan>Hello <bold>World!</bold></cyan>';
-        $actual = (string) color($text)->colorize();
-        $expected = (string) color('Hello ' . color('World!')->bold)->cyan;
-        $this->assertSame($expected, $actual);
+        $actual = (string) color('<cyan>Hello <bold>World!</bold></cyan>')->colorize();
+        $expected = (string) color('Hello ' . color('World!')->bold())->cyan();
+        assertSame($expected, $actual);
     }
 
     public function testAppliesStyleDirectlyToText()
     {
-        $actual = color()->apply('blue', 'foo');
-        $expected = (string) color('foo')->blue;
-        $this->assertSame($expected, $actual);
-
-        $actual = color()->white('some white text');
-        $expected = (string) color('some white text')->white();
-        $this->assertSame($expected, $actual);
+        assertSame((string) color('foo')->blue(), color()->apply('blue', 'foo'));
     }
 
-    public function testCenter()
+    public function testWhenApplyCenterToStringShouldCenterIt()
     {
         $width = 80;
         $color = new Color();
         foreach (array('', 'hello', 'hello world!', '✩') as $text) {
             $actualWidth = mb_strlen($color($text)->center($width)->__toString(), 'UTF-8');
-            $this->assertSame($width, $actualWidth);
+            assertSame($width, $actualWidth);
             $actualWidth = mb_strlen($color($text)->center($width)->bg('blue')->clean()->__toString(), 'UTF-8');
-            $this->assertSame($width, $actualWidth);
+            assertSame($width, $actualWidth);
         }
     }
 
-    public function testCenterMultiline()
+    public function testWhenApplyCenterToMultilineStringShouldCenterIt()
     {
         $width = 80;
         $color = new Color();
@@ -206,37 +170,20 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
 
         $actual = $color($text)->center($width)->__toString();
         foreach (explode(PHP_EOL, $actual) as $line) {
-            $this->assertSame($width, mb_strlen($line, 'UTF-8'));
+            assertSame($width, mb_strlen($line, 'UTF-8'));
         }
-    }
-
-    public function testStylesAreNotAppliedWhenNotSupported()
-    {
-        $color = $this->getMock('colors\color', array('isSupported'));
-        $color
-            ->expects($this->any())
-            ->method('isSupported')
-            ->will($this->returnvalue(false));
-        $this->assertfalse($color->issupported());
-
-        $actual = $color->apply('blue', 'foo');
-        $this->assertsame('foo', $actual);
     }
 
     public function testStylesAreAppliedWhenForced()
     {
         $color = $this->getMock('colors\color', array('isSupported'));
-        $color
-            ->expects($this->any())
+        $color->expects($this->any())
             ->method('isSupported')
             ->will($this->returnvalue(false));
-        $this->assertfalse($color->issupported());
 
         $color->setForceStyle(true);
-        $this->assertTrue($color->isStyleForced());
 
-        $actual = $color->apply('blue', 'foo');
-        $expected = (string) color()->apply('blue', 'foo');
-        $this->assertsame($expected, $actual);
+        assertTrue($color->isStyleForced());
+        assertsame((string) color('foo')->blue(), (string) $color('foo')->blue());
     }
 }
