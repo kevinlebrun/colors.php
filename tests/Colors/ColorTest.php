@@ -186,4 +186,29 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         assertTrue($color->isStyleForced());
         assertsame((string) color('foo')->blue(), (string) $color('foo')->blue());
     }
+
+    public function testShouldSupport256Colors()
+    {
+        assertSame("\033[38;5;3mfoo\033[0m", color()->apply('color[3]', 'foo'));
+        assertSame("\033[48;5;3mfoo\033[0m", color()->apply('bg_color[3]', 'foo'));
+    }
+
+    public function testGivenInvalidColorNumberShouldThrowException()
+    {
+        try {
+            color()->apply('color[-1]', 'foo');
+            $this->fail('Must throw an exception');
+        } catch (NoStyleFoundException $e) {
+            assertInstanceOf('InvalidArgumentException', $e);
+            assertEquals('Invalid style color[-1]', $e->getMessage());
+        }
+
+        try {
+            color()->apply('color[256]', 'foo');
+            $this->fail('Must throw an exception');
+        } catch (NoStyleFoundException $e) {
+            assertInstanceOf('InvalidArgumentException', $e);
+            assertEquals('Invalid style color[256]', $e->getMessage());
+        }
+    }
 }

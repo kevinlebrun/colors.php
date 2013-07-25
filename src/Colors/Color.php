@@ -106,16 +106,23 @@ class Color
 
     /**
      * https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L93-112
+     * @codeCoverageIgnore
      */
     public function isSupported()
     {
-        // @codeCoverageIgnoreStart
-        if (DIRECTORY_SEPARATOR == '\\') {
+        if (DIRECTORY_SEPARATOR === '\\') {
             return false !== getenv('ANSICON');
         }
 
         return function_exists('posix_isatty') && @posix_isatty(STDOUT);
-        // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function are256ColorsSupported()
+    {
+        return DIRECTORY_SEPARATOR === '/' && false !== strpos(getenv('TERM'), '256color');
     }
 
     protected function setInternalState($string)
@@ -140,6 +147,11 @@ class Color
             return $this->applyStyle($style, $text);
         }
 
+        if (preg_match('/^((?:bg_)?)color\[([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\]$/', $style, $matches)) {
+            $option = $matches[1] == 'bg_' ? 48 : 38;
+            return $this->buildEscSeq("{$option};5;{$matches[2]}") . $text . $this->buildEscSeq($this->styles['reset']);
+        }
+
         throw new NoStyleFoundException("Invalid style $style");
     }
 
@@ -155,12 +167,12 @@ class Color
 
     protected function applyStyle($style, $text)
     {
-        return $this->buildEscSeq($style) . $text . $this->buildEscSeq('reset');
+        return $this->buildEscSeq($this->styles[$style]) . $text . $this->buildEscSeq($this->styles['reset']);
     }
 
     protected function buildEscSeq($style)
     {
-        return sprintf(self::ESC_SEQ_PATTERN, $this->styles[$style]);
+        return sprintf(self::ESC_SEQ_PATTERN, $style);
     }
 
     protected function isUserStyleExists($style)

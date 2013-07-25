@@ -3,6 +3,9 @@
 FEATURES:
 
  - Added brighter colors. #4
+ - Added support for 256 colors. #4
+ - Added a script to draw 256 colors on screen `256colors.php`.
+ - Added a `are256ColorsSupported` method to check 256 color support on Linux.
 
 IMPROVEMENTS:
 
