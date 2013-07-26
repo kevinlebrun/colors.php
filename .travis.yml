@@ -14,3 +14,7 @@ script:
 
 after_script:
   - php bin/coveralls -v
+
+notifications:
+    email:
+        - lebrun.k@gmail.com
