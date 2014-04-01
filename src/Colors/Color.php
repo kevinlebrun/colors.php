@@ -266,6 +266,7 @@ class Color
 
     /**
      * @deprecated
+     * @codeCoverageIgnore
      */
     public function setTheme(array $theme)
     {

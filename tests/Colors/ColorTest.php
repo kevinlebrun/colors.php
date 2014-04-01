@@ -92,19 +92,11 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         assertEquals((string) color('Warning...')->red, (string) $color('Warning...')->white);
     }
 
-    public function testHasThemeShortcutForUserStyles()
-    {
-        $color = new Color();
-        $color->setTheme(array('error' => 'red'));
-
-        assertInternalType('string', (string) $color('Hello')->red);
-    }
-
     public function testGivenInvalidUserStyleNameShouldThrowAnException()
     {
         $color = new Color();
         try {
-            $color->setTheme(array('foo-bar' => 'red'));
+            $color->setUserStyles(array('foo-bar' => 'red'));
             $this->fail('must throw an InvalidArgumentException');
         } catch (InvalidStyleNameException $e) {
             assertInstanceOf('InvalidArgumentException', $e);

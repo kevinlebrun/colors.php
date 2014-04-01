@@ -1,6 +1,7 @@
 filter:
     excluded_paths:
         - vendor/*
+        - example.php
 
 before_commands:
     - "composer install --no-interaction"
