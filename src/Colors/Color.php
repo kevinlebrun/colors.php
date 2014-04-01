@@ -5,7 +5,7 @@ namespace Colors;
 class Color
 {
     const FORMAT_PATTERN = '#<([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)>(.*?)</\\1?>#s';
-    // http://www.php.net/manual/en/functions.user-defined.php
+    /** @link http://www.php.net/manual/en/functions.user-defined.php */
     const STYLE_NAME_PATTERN = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
 
     const ESC = "\033[";
@@ -105,7 +105,7 @@ class Color
     }
 
     /**
-     * https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L93-112
+     * @link https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L93-112
      * @codeCoverageIgnore
      */
     public function isSupported()
@@ -290,7 +290,7 @@ class Color
     }
 
     /**
-     * https://github.com/symfony/Console/blob/master/Formatter/OutputFormatter.php#L124-162
+     * @link https://github.com/symfony/Console/blob/master/Formatter/OutputFormatter.php#L124-162
      */
     public function colorize($text = null)
     {
