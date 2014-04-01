@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/kevinlebrun/colors.php.png)](http://travis-ci.org/kevinlebrun/colors.php?branch=master)
 [![Coverage Status](https://coveralls.io/repos/kevinlebrun/colors.php/badge.png)](https://coveralls.io/r/kevinlebrun/colors.php)
-
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kevinlebrun/colors.php/badges/quality-score.png?s=d16482bff3ea81a529ae87a5b5624f1a30db0b98)](https://scrutinizer-ci.com/g/kevinlebrun/colors.php/)
 [![Latest Stable Version](https://poser.pugx.org/kevinlebrun/colors.php/v/stable.png)](https://packagist.org/packages/kevinlebrun/colors.php)
 [![Total Downloads](https://poser.pugx.org/kevinlebrun/colors.php/downloads.png)](https://packagist.org/packages/kevinlebrun/colors.php)
 
