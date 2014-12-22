@@ -103,7 +103,7 @@ class Color
     {
         return $this->isStyleForced;
     }
-    
+
     /**
      * Returns true if the stream supports colorization.
      *
@@ -112,10 +112,10 @@ class Color
      *  -  Windows without Ansicon and ConEmu
      *  -  non tty consoles
      *
+     * @return bool true if the stream supports colorization, false otherwise
+     *
      * @link https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L95-L102
      * @codeCoverageIgnore
-     * 
-     * @return bool true if the stream supports colorization, false otherwise
      */
     public function isSupported()
     {
@@ -124,7 +124,7 @@ class Color
         }
 
         return function_exists('posix_isatty') && @posix_isatty($this->stream);
-    }    
+    }
 
     /**
      * @codeCoverageIgnore
