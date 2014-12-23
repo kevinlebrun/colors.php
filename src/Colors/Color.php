@@ -105,13 +105,22 @@ class Color
     }
 
     /**
-     * @link https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L93-112
+     * Returns true if the stream supports colorization.
+     *
+     * Colorization is disabled if not supported by the stream:
+     *
+     *  -  Windows without Ansicon and ConEmu
+     *  -  non tty consoles
+     *
+     * @return bool true if the stream supports colorization, false otherwise
+     *
+     * @link https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L95-L102
      * @codeCoverageIgnore
      */
     public function isSupported()
     {
-        if (DIRECTORY_SEPARATOR === '\\') {
-            return false !== getenv('ANSICON');
+        if (DIRECTORY_SEPARATOR == '\\') {
+            return false !== getenv('ANSICON') || 'ON' === getenv('ConEmuANSI');
         }
 
         return function_exists('posix_isatty') && @posix_isatty(STDOUT);
