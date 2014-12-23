@@ -136,6 +136,7 @@ Code style conventions must be followed:
 * Menthol <https://github.com/menthol>
 * Shane Garelja <https://github.com/shane-garelja>
 * Travis J. VanDame <https://github.com/tvandame>
+* Markus Staab <markus.staab@redaxo.de>
 
 ## License
 
