@@ -109,7 +109,7 @@ class Color
      *
      * Colorization is disabled if not supported by the stream:
      *
-     *  -  Windows without Ansicon and ConEmu
+     *  -  Windows without Ansicon, ConEmu or Babun
      *  -  non tty consoles
      *
      * @return bool true if the stream supports colorization, false otherwise
@@ -120,10 +120,10 @@ class Color
     public function isSupported()
     {
         if (DIRECTORY_SEPARATOR == '\\') {
-            return false !== getenv('ANSICON') || 'ON' === getenv('ConEmuANSI');
+            return false !== getenv('ANSICON') || 'ON' === getenv('ConEmuANSI') || false !== getenv('BABUN_HOME');
         }
 
-        return function_exists('posix_isatty') && @posix_isatty(STDOUT);
+        return  (false !== getenv('BABUN_HOME')) || function_exists('posix_isatty') && @posix_isatty(STDOUT);
     }
 
     /**
