@@ -6,50 +6,11 @@
 [![Latest Stable Version](https://poser.pugx.org/kevinlebrun/colors.php/v/stable.png)](https://packagist.org/packages/kevinlebrun/colors.php)
 [![Total Downloads](https://poser.pugx.org/kevinlebrun/colors.php/downloads.png)](https://packagist.org/packages/kevinlebrun/colors.php)
 
-Combine all those styles to make your console script awesome:
+Here is a preview of what you can achieve with the library:
 
-* reset
-* bold
-* dark
-* italic
-* underline
-* blink
-* reverse
-* concealed
-* default
-* white
-* black
-* red
-* green
-* yellow
-* blue
-* magenta
-* cyan
-* light_gray
-* dark_gray
-* light_red
-* light_green
-* light_yellow
-* light_blue
-* light_magenta
-* light_cyan
-* bg_default
-* bg_white
-* bg_black
-* bg_red
-* bg_green
-* bg_yellow
-* bg_blue
-* bg_magenta
-* bg_cyan
-* bg_light_gray
-* bg_dark_gray
-* bg_light_red
-* bg_light_green
-* bg_light_yellow
-* bg_light_blue
-* bg_light_magenta
-* bg_light_cyan
+![Example](/images/example.png)
+
+![256 colors](/images/256colors.png)
 
 ## Installation
 
@@ -137,12 +98,13 @@ Code style conventions must be followed:
 * Shane Garelja <https://github.com/shane-garelja>
 * Travis J. VanDame <https://github.com/tvandame>
 * Markus Staab <markus.staab@redaxo.de>
+* inquam <danielliljeberg@spray.se>
 
 ## License
 
 (The MIT License)
 
-Copyright (c) 2014 Kevin Le Brun <lebrun.k@gmail.com>
+Copyright (c) 2016 Kevin Le Brun <lebrun.k@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
