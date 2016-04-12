@@ -288,6 +288,10 @@ class Color
             if (!$this->isAValidStyleName($name)) {
                 throw new InvalidStyleNameException("$name is not a valid style name");
             }
+
+            if (in_array($name, (array) $styles)) {
+                throw new RecursionInUserStylesException('User style cannot reference itself.');
+            }
         }
 
         $this->userStyles = $userStyles;

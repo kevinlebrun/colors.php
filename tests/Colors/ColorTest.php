@@ -5,6 +5,7 @@ namespace Colors\Test;
 use Colors\Color;
 use Colors\NoStyleFoundException;
 use Colors\InvalidStyleNameException;
+use Colors\RecursionInUserStylesException;
 
 function color($string = '')
 {
@@ -201,6 +202,24 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         } catch (NoStyleFoundException $e) {
             assertInstanceOf('InvalidArgumentException', $e);
             assertEquals('Invalid style color[256]', $e->getMessage());
+        }
+    }
+
+    /**
+     * Bug #10
+     */
+    public function testShouldHandleRecursionInTheme()
+    {
+        try {
+            $c = color()->setTheme(
+                array(
+                    'green' => array('green'),
+                )
+            );
+            $this->fail('Must throw an exception');
+        } catch (RecursionInUserStylesException $e) {
+            assertInstanceOf('InvalidArgumentException', $e);
+            assertEquals('User style cannot reference itself.', $e->getMessage());
         }
     }
 }
