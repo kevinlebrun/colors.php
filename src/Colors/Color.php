@@ -65,6 +65,17 @@ class Color
     protected $userStyles = array();
     protected $isStyleForced = false;
 
+    /** @var Color */
+    protected static $instance;
+
+    public static function instance()
+    {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
     public function __construct($string = '')
     {
         $this->setInternalState($string);
