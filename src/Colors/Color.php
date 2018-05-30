@@ -114,16 +114,30 @@ class Color
      *
      * @return bool true if the stream supports colorization, false otherwise
      *
-     * @link https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L95-L102
+     * @link https://github.com/symfony/Console/blob/master/Output/StreamOutput.php#L94
      * @codeCoverageIgnore
      */
     public function isSupported()
     {
-        if (DIRECTORY_SEPARATOR == '\\') {
-            return false !== getenv('ANSICON') || 'ON' === getenv('ConEmuANSI') || false !== getenv('BABUN_HOME');
+        if (DIRECTORY_SEPARATOR === '\\') {
+            return (function_exists('sapi_windows_vt100_support')
+                && @sapi_windows_vt100_support(STDOUT))
+                || false !== getenv('ANSICON')
+                || 'ON' === getenv('ConEmuANSI')
+                || 'xterm' === getenv('TERM');
         }
 
-        return  (false !== getenv('BABUN_HOME')) || function_exists('posix_isatty') && @posix_isatty(STDOUT);
+        if (function_exists('stream_isatty')) {
+            return @stream_isatty(STDOUT);
+        }
+
+        if (function_exists('posix_isatty')) {
+            return @posix_isatty(STDOUT);
+        }
+
+        $stat = @fstat($this->stream);
+        // Check if formatted mode is S_IFCHR
+        return $stat ? 0020000 === ($stat['mode'] & 0170000) : false;
     }
 
     /**
@@ -303,9 +317,6 @@ class Color
         return preg_replace_callback(self::FORMAT_PATTERN, array($this, 'replaceStyle'), $text);
     }
 
-    /**
-     * @link https://github.com/symfony/Console/blob/master/Formatter/OutputFormatter.php#L124-162
-     */
     public function colorize($text = null)
     {
         if ($text === null) {

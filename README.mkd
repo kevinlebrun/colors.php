@@ -19,12 +19,13 @@ Installation via composer is highly recommended.
 ```json
 {
     "require": {
-        "kevinlebrun/colors.php": "0.*"
+        "kevinlebrun/colors.php": "1.0.*"
     }
 }
 ```
 
-    $ curl -s https://getcomposer.org/installer | php
+Install [composer](https://getcomposer.org/download/).
+
     $ php composer.phar install
 
 ## Usage
@@ -76,9 +77,8 @@ echo $c->clean($message) . PHP_EOL;
 
 ## Contributing
 
-Install development dependencies:
+Install [composer](https://getcomposer.org/download/).
 
-    $ curl -s https://getcomposer.org/installer | php
     $ php composer.phar install --dev
 
 All tests must pass:
@@ -104,7 +104,7 @@ Code style conventions must be followed:
 
 (The MIT License)
 
-Copyright (c) 2016 Kevin Le Brun <lebrun.k@gmail.com>
+Copyright (c) 2018 Kevin Le Brun <lebrun.k@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

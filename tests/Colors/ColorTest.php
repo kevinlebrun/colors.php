@@ -147,6 +147,7 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
     {
         $width = 80;
         $color = new Color();
+
         foreach (array('', 'hello', 'hello world!', '✩') as $text) {
             $actualWidth = mb_strlen($color($text)->center($width)->__toString(), 'UTF-8');
             assertSame($width, $actualWidth);
