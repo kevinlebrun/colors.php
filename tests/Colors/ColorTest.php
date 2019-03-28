@@ -212,7 +212,7 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
     public function testShouldHandleRecursionInTheme()
     {
         try {
-            $c = color()->setTheme(
+            color()->setTheme(
                 array(
                     'green' => array('green'),
                 )
