@@ -2,6 +2,7 @@
 
 namespace Colors\Test;
 
+use PHPUnit\Framework\TestCase;
 use Colors\Color;
 use Colors\NoStyleFoundException;
 use Colors\InvalidStyleNameException;
@@ -12,33 +13,33 @@ function color($string = '')
     return new Color($string);
 }
 
-class ColorsTest extends \PHPUnit_Framework_TestCase
+class ColorsTest extends TestCase
 {
     public function testGivenStringShouldApplyStyle()
     {
-        assertSame("\033[31mfoo\033[0m", (string) color('foo')->red());
+        $this->assertSame("\033[31mfoo\033[0m", (string) color('foo')->red());
     }
 
     public function testGivenStringShouldApplyMoreThanOneStyle()
     {
-        assertSame("\033[1m\033[97mfoo\033[0m\033[0m", (string) color('foo')->white()->bold());
+        $this->assertSame("\033[1m\033[97mfoo\033[0m\033[0m", (string) color('foo')->white()->bold());
     }
 
     public function testStyleNameIsNotCaseSensitive()
     {
-        assertSame("\033[31mfoo\033[0m", (string) color('foo')->RED());
+        $this->assertSame("\033[31mfoo\033[0m", (string) color('foo')->RED());
     }
 
     public function testStateIsInitializedForSuccessiveCalls()
     {
         $color = new Color();
-        assertSame('foo', (string) $color('foo'));
-        assertSame('bar', (string) $color('bar'));
+        $this->assertSame('foo', (string) $color('foo'));
+        $this->assertSame('bar', (string) $color('bar'));
     }
 
     public function testGivenStyledStringShouldBeAbleToResetIt()
     {
-        assertSame('foo', (string) color('foo')->blue()->reset());
+        $this->assertSame('foo', (string) color('foo')->blue()->reset());
     }
 
     public function testThrowsExceptionForUnknownStyle()
@@ -47,34 +48,34 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
             color('foo bar')->foo();
             $this->fail('Must throw an exception');
         } catch (NoStyleFoundException $e) {
-            assertInstanceOf('InvalidArgumentException', $e);
-            assertEquals('Invalid style foo', $e->getMessage());
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Invalid style foo', $e->getMessage());
         }
     }
 
     public function testCanDirectlyCallStyleMethodOnText()
     {
-        assertsame((string) color('foo')->blue(), color()->blue('foo'));
+        $this->assertSame((string) color('foo')->blue(), color()->blue('foo'));
     }
 
     public function testHasShortcutForForegroundColor()
     {
-        assertSame((string) color('Hello')->blue(), (string) color('Hello')->fg('blue'));
+        $this->assertSame((string) color('Hello')->blue(), (string) color('Hello')->fg('blue'));
     }
 
     public function testHasShortcutForBackgroundColor()
     {
-        assertSame((string) color('Hello')->bg_red(), (string) color('Hello')->bg('red'));
+        $this->assertSame((string) color('Hello')->bg_red(), (string) color('Hello')->bg('red'));
     }
 
     public function testHasHighlightShortcutForBackgroundColor()
     {
-        assertSame((string) color('Hello')->bg_blue(), (string) color('Hello')->highlight('blue'));
+        $this->assertSame((string) color('Hello')->bg_blue(), (string) color('Hello')->highlight('blue'));
     }
 
     public function testHasPropertyShortcutForStyle()
     {
-        assertSame((string) color('Hello')->blue(), (string) color('Hello')->blue);
+        $this->assertSame((string) color('Hello')->blue(), (string) color('Hello')->blue);
     }
 
     public function testShouldSupportUserStyles()
@@ -82,7 +83,7 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $color = new Color();
         $color->setUserStyles(array('error' => 'red'));
 
-        assertEquals((string) color('Error...')->red(), (string) $color('Error...')->error());
+        $this->assertEquals((string) color('Error...')->red(), (string) $color('Error...')->error());
     }
 
     public function testUserStylesShouldOverrideDefaultStyles()
@@ -90,7 +91,7 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
         $color = new Color();
         $color->setUserStyles(array('white' => 'red'));
 
-        assertEquals((string) color('Warning...')->red, (string) $color('Warning...')->white);
+        $this->assertEquals((string) color('Warning...')->red, (string) $color('Warning...')->white);
     }
 
     public function testGivenInvalidUserStyleNameShouldThrowAnException()
@@ -100,19 +101,19 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
             $color->setUserStyles(array('foo-bar' => 'red'));
             $this->fail('must throw an InvalidArgumentException');
         } catch (InvalidStyleNameException $e) {
-            assertInstanceOf('InvalidArgumentException', $e);
-            assertSame('foo-bar is not a valid style name', $e->getMessage());
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertSame('foo-bar is not a valid style name', $e->getMessage());
         }
     }
 
     public function testGivenStyledStringWhenCleanedShouldStripAllStyles()
     {
-        assertEquals('some text', (string) color((string) color('some text')->red())->clean());
+        $this->assertEquals('some text', (string) color((string) color('some text')->red())->clean());
     }
 
     public function testHasStripShortcutForClean()
     {
-        assertEquals('some text', (string) color()->strip(color('some text')->red()));
+        $this->assertEquals('some text', (string) color()->strip(color('some text')->red()));
     }
 
     public function testGivenThatStylesAreNotSupportedShouldReturnInputString()
@@ -122,25 +123,25 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
             ->method('isSupported')
             ->will($this->returnValue(false));
 
-        assertSame('foo bar', (string) $color('foo bar')->red());
+        $this->assertSame('foo bar', (string) $color('foo bar')->red());
     }
 
     public function testGivenStringWithStyleTagsShouldInterpretThem()
     {
         $text = 'before <red>some text</red>';
-        assertSame('before ' . color('some text')->red(), (string) color($text)->colorize());
+        $this->assertSame('before ' . color('some text')->red(), (string) color($text)->colorize());
     }
 
     public function testGivenStringWithNestedStyleTagsShouldInterpretThem()
     {
         $actual = (string) color('<cyan>Hello <bold>World!</bold></cyan>')->colorize();
         $expected = (string) color('Hello ' . color('World!')->bold())->cyan();
-        assertSame($expected, $actual);
+        $this->assertSame($expected, $actual);
     }
 
     public function testAppliesStyleDirectlyToText()
     {
-        assertSame((string) color('foo')->blue(), color()->apply('blue', 'foo'));
+        $this->assertSame((string) color('foo')->blue(), color()->apply('blue', 'foo'));
     }
 
     public function testWhenApplyCenterToStringShouldCenterIt()
@@ -150,9 +151,9 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
 
         foreach (array('', 'hello', 'hello world!', '✩') as $text) {
             $actualWidth = mb_strlen($color($text)->center($width)->__toString(), 'UTF-8');
-            assertSame($width, $actualWidth);
+            $this->assertSame($width, $actualWidth);
             $actualWidth = mb_strlen($color($text)->center($width)->bg('blue')->clean()->__toString(), 'UTF-8');
-            assertSame($width, $actualWidth);
+            $this->assertSame($width, $actualWidth);
         }
     }
 
@@ -164,7 +165,7 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
 
         $actual = $color($text)->center($width)->__toString();
         foreach (explode(PHP_EOL, $actual) as $line) {
-            assertSame($width, mb_strlen($line, 'UTF-8'));
+            $this->assertSame($width, mb_strlen($line, 'UTF-8'));
         }
     }
 
@@ -177,14 +178,14 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
 
         $color->setForceStyle(true);
 
-        assertTrue($color->isStyleForced());
-        assertsame((string) color('foo')->blue(), (string) $color('foo')->blue());
+        $this->assertTrue($color->isStyleForced());
+        $this->assertSame((string) color('foo')->blue(), (string) $color('foo')->blue());
     }
 
     public function testShouldSupport256Colors()
     {
-        assertSame("\033[38;5;3mfoo\033[0m", color()->apply('color[3]', 'foo'));
-        assertSame("\033[48;5;3mfoo\033[0m", color()->apply('bg_color[3]', 'foo'));
+        $this->assertSame("\033[38;5;3mfoo\033[0m", color()->apply('color[3]', 'foo'));
+        $this->assertSame("\033[48;5;3mfoo\033[0m", color()->apply('bg_color[3]', 'foo'));
     }
 
     public function testGivenInvalidColorNumberShouldThrowException()
@@ -193,16 +194,16 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
             color()->apply('color[-1]', 'foo');
             $this->fail('Must throw an exception');
         } catch (NoStyleFoundException $e) {
-            assertInstanceOf('InvalidArgumentException', $e);
-            assertEquals('Invalid style color[-1]', $e->getMessage());
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Invalid style color[-1]', $e->getMessage());
         }
 
         try {
             color()->apply('color[256]', 'foo');
             $this->fail('Must throw an exception');
         } catch (NoStyleFoundException $e) {
-            assertInstanceOf('InvalidArgumentException', $e);
-            assertEquals('Invalid style color[256]', $e->getMessage());
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Invalid style color[256]', $e->getMessage());
         }
     }
 
@@ -219,8 +220,8 @@ class ColorsTest extends \PHPUnit_Framework_TestCase
             );
             $this->fail('Must throw an exception');
         } catch (RecursionInUserStylesException $e) {
-            assertInstanceOf('InvalidArgumentException', $e);
-            assertEquals('User style cannot reference itself.', $e->getMessage());
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('User style cannot reference itself.', $e->getMessage());
         }
     }
 }
