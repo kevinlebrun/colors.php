@@ -93,6 +93,11 @@ class Color
     {
         return $this->wrapped;
     }
+    
+    public function setString($string)
+    {
+        return $this->setInternalState($string);
+    }
 
     public function setForceStyle($force)
     {
